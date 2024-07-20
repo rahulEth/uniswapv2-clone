@@ -128,7 +128,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20{
    
         uint balance0 = IERC20(token0).balanceOf(address(this));
         uint balance1 = IERC20(token1).balanceOf(address(this));
-        uint amount0 = balance0.sub(_reserve0);
+        uint amount0 = balance0.sub(_reserve0);  // added token amount to pair contract address
         uint amount1 = balance1.sub(_reserve1);
         
         bool feeOn = _mintFee(_reserve0, _reserve1); // if reserves increases , it will mint liquidity as LP tokens
