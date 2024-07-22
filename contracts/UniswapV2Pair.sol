@@ -174,6 +174,8 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20{
     }
 
     // this low-level function should be called from a contract which performs important safety checks
+    // suppose reserve0 = 20000 DAI, reserve1 = 10 WETH
+    // amount0Out = 1500, amount1Out = 0
 
     function swap(uint amount0out, uint amount1out, address to, bytes calldata data) external lock{
         require(amount0out > 0 || amount1out > 0, 'UNISWAPV2: INSUFFICIENT_OUTPUT_AMOUNT');
@@ -191,8 +193,8 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20{
 
             if (data.length > 0) IUniswapV2Callee(to).uniswapV2Call(msg.sender, amount0out, amount1out, data);
 
-            balance0 = IERC20(_token0).balanceOf(address(this));
-            balance1 = IERC20(_token1).balanceOf(address(this));
+            balance0 = IERC20(_token0).balanceOf(address(this)); // 18500
+            balance1 = IERC20(_token1).balanceOf(address(this)); // 11
 
         }
         uint amount0In = balance0 > _reserve0 - amount0out ? balance0 - (_reserve0 - amount0out) : 0;
@@ -200,15 +202,15 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20{
         require(amount0In > 0 || amount1In > 0 , 'UNISWAPV2: INSUFFICIENT_INPUT_AMOUNT');
         {
             //use to maintain the inveriant of the liqudutuy pool after applying the small fee to each trade
-            //  balance0 * 1000 - amount0In * 3 / 1000 =   balance0 * 1000 - amount0In * 3
-            uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));   
-            uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
+            //  balance0 - amount0In * 3 / 1000 =   balance0 * 1000 - amount0In * 3
+            uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3)); // 18500 reserve of X after trader sends tokenX to the pool minums 0.3% of the amount sent     
+            uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3)); // 10.997
             /*
                 By calculating balance0Adjusted and balance1Adjusted, the contract 
                 can enforce that the product of the reserves after fees is equal to or greater 
                 than the product before the trade, upholding the integrity of the pool.
             */
-            require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UNISWAPV2: k');
+            require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'UNISWAPV2: k');  // newK >= k
 
         }
 

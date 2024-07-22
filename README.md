@@ -30,7 +30,17 @@ total amout of usd = $75,000((8ETH * $4,687.5) + 37,500))
 if she had hold these token externally
 value would be = 10*4.687.5+ 30000;
                =  $76,875
-impermanent loos = 76875 -75000 =1,875               
+impermanent loos = 76875 -75000 =1,875      
+
+
+
+## formula to get maximum output
+
+dx = x * ( 0.997 * dy) / (y + 0.997 * dy);
+
+suppose reserveX = 100000 , reserveY = 20;
+
+dx = 4748.29..
 
 
 
